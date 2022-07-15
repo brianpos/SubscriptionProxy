@@ -1,6 +1,7 @@
 using Hl7.Fhir.DemoFileSystemFhirServer;
 using Hl7.Fhir.NetCoreApi;
 using Hl7.Fhir.WebApi;
+using SubscriptionProxy.Models;
 
 
 // Workaround for the R4B Citation resource
@@ -12,9 +13,9 @@ if (!Hl7.Fhir.Model.ModelInfo.FhirTypeToCsType.ContainsKey("Citation"))
 
 var builder = WebApplication.CreateBuilder(args);
 
-DirectorySystemService<System.IServiceProvider>.Directory = @"c:\temp\subs-proxy";
+SystemService.Directory = builder.Configuration.GetValue<string>("ServerBaseDirectory");
 builder.Services.AddSingleton<IFhirSystemServiceR4<IServiceProvider>>((s) => {
-    var systemService = new DirectorySystemService<System.IServiceProvider>();
+    var systemService = new SystemService();
     systemService.InitializeIndexes();
     return systemService;
 });
