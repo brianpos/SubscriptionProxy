@@ -14,6 +14,7 @@ if (!Hl7.Fhir.Model.ModelInfo.FhirTypeToCsType.ContainsKey("Citation"))
 var builder = WebApplication.CreateBuilder(args);
 
 SystemService.Directory = builder.Configuration.GetValue<string>("ServerBaseDirectory");
+SystemService.ProxyToServer = builder.Configuration.GetValue<string>("ProxyToServer");
 builder.Services.AddSingleton<IFhirSystemServiceR4<IServiceProvider>>((s) => {
     var systemService = new SystemService();
     systemService.InitializeIndexes();

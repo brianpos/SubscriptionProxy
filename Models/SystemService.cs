@@ -23,6 +23,12 @@ namespace SubscriptionProxy.Models
         /// The File system directory that will be scanned for the storage of FHIR resources
         /// </summary>
         public static string Directory { get; set; }
+
+        /// <summary>
+        /// All the actual calls to resources will be re-directed to this server.
+        /// </summary>
+        public static string ProxyToServer { get; set; }
+        
         private SearchIndexer _indexer;
         public int DefaultPageSize { get; set; } = 40;
 
@@ -75,8 +81,8 @@ namespace SubscriptionProxy.Models
         {
             if (!Hl7.Fhir.Model.ModelInfo.IsCoreModelType(resourceName))
                 throw new NotImplementedException();
-
-            return new ResourceProxy(request, resourceName, Directory, _source, _source) { Indexer = _indexer };
+            
+            return new ResourceProxy(ProxyToServer, request, resourceName, Directory, _source, _source, _indexer);
         }
 
         public Task<Resource> PerformOperation(ModelBaseInputs<IServiceProvider> request, string operation, Parameters operationParameters, SummaryType summary)
