@@ -17,7 +17,7 @@ using Microsoft.Extensions.Hosting;
 namespace argonaut_subscription_server_proxy.Managers
 {
     /// <summary>Manager for notifications.</summary>
-    public class NotificationManager
+    public static class NotificationManager
     {
         /// <summary>The instance (singleton).</summary>
         private static NotificationManager _instance;

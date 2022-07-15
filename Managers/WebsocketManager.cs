@@ -3,16 +3,12 @@
 //     Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // </copyright>
 
-extern alias fhir4;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using argonaut_subscription_server_proxy.Models;
-using fhirCsModels4B = fhirCsR4B.Models;
-using fhirCsModels5 = fhirCsR5.Models;
-using fhirCsValueSets5 = fhirCsR5.ValueSets;
+using fhirCsModels4B = Hl7.Fhir.Model;
 
 namespace argonaut_subscription_server_proxy.Managers
 {
@@ -291,8 +287,7 @@ namespace argonaut_subscription_server_proxy.Managers
                 return false;
             }
 
-            if ((!SubscriptionManagerR4.Exists(subscriptionId)) &&
-                (!SubscriptionManagerR5.Exists(subscriptionId)))
+            if (!SubscriptionManagerR4.Exists(subscriptionId))
             {
                 return false;
             }
@@ -341,30 +336,6 @@ namespace argonaut_subscription_server_proxy.Managers
             }
 
             return true;
-        }
-
-        /// <summary>Queue messages for subscription.</summary>
-        /// <param name="subscription">The subscription.</param>
-        /// <param name="json">        The resource.</param>
-        public static void QueueMessagesForSubscription(
-            fhirCsModels5.Subscription subscription,
-            string json)
-        {
-            if (subscription == null)
-            {
-                return;
-            }
-
-            if (!_instance._subscriptionInfosDict.ContainsKey(subscription.Id))
-            {
-                return;
-            }
-
-            foreach (WebsocketClientInformation client in _instance._subscriptionInfosDict[subscription.Id])
-            {
-                // add this message to this client's queue (caller should have set it up correctly)
-                client.MessageQ.Enqueue(json);
-            }
         }
 
         /// <summary>Queue messages for subscription.</summary>

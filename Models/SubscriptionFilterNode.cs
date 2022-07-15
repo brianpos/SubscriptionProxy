@@ -4,8 +4,7 @@
 // </copyright>
 
 using System.Collections.Generic;
-using fhirCsModels4B = fhirCsR4B.Models;
-using fhirCsModels5 = fhirCsR5.Models;
+using fhirCsModels4B = Hl7.Fhir.Model;
 
 namespace argonaut_subscription_server_proxy.Models
 {
@@ -18,14 +17,9 @@ namespace argonaut_subscription_server_proxy.Models
         public SubscriptionFilterNode()
         {
             SubscriptionsR4 = new ();
-            SubscriptionsR5 = new ();
             Inclusions = new ();
             Exclusions = new ();
         }
-
-        /// <summary>Gets or sets the subscriptions.</summary>
-        /// <value>The subscriptions.</value>
-        public List<fhirCsModels5.Subscription> SubscriptionsR5 { get; set; }
 
         /// <summary>Gets or sets the subscriptions.</summary>
         /// <value>The subscriptions.</value>
@@ -58,23 +52,6 @@ namespace argonaut_subscription_server_proxy.Models
                 foreach (fhirCsModels4B.Subscription subscription in r4ToRemove)
                 {
                     SubscriptionsR4.Remove(subscription);
-                }
-            }
-
-            List<fhirCsModels5.Subscription> r5ToRemove = new ();
-            foreach (fhirCsModels5.Subscription subscription in SubscriptionsR5)
-            {
-                if (subscription.Id == id)
-                {
-                    r5ToRemove.Add(subscription);
-                }
-            }
-
-            if (r5ToRemove.Count != 0)
-            {
-                foreach (fhirCsModels5.Subscription subscription in r5ToRemove)
-                {
-                    SubscriptionsR5.Remove(subscription);
                 }
             }
 
@@ -128,7 +105,6 @@ namespace argonaut_subscription_server_proxy.Models
         public bool IsEmpty()
         {
             if ((SubscriptionsR4.Count == 0) &&
-                (SubscriptionsR5.Count == 0) &&
                 (Inclusions.Count == 0) &&
                 (Exclusions.Count == 0))
             {

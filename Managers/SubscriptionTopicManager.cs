@@ -1,25 +1,25 @@
-﻿// <copyright file="SubscriptionTopicManagerR4.cs" company="Microsoft Corporation">
+﻿// <copyright file="SubscriptionTopicManagerR5.cs" company="Microsoft Corporation">
 //     Copyright (c) Microsoft Corporation. All rights reserved.
 //     Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // </copyright>
-
-extern alias fhir5;
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
-using fhirCsR4B.Models;
-using fhirCsValueSets4B = fhirCsR4B.ValueSets;
+using Hl7.Fhir.Model;
+using SubscriptionProxy.Managers;
+using static Hl7.Fhir.Model.SubscriptionTopic;
+// using fhirCsValueSets5 = fhirCsR5.ValueSets;
 
 namespace argonaut_subscription_server_proxy.Managers
 {
     /// <summary>Manager for topics.</summary>
-    public class SubscriptionTopicManagerR4
+    public class SubscriptionTopicManager
     {
         /// <summary>The instance for singleton pattern.</summary>
-        private static SubscriptionTopicManagerR4 _instance;
+        private static SubscriptionTopicManager _instance;
 
         /// <summary>Dictionary of topic names to indicies in _topics.</summary>
         private Dictionary<string, SubscriptionTopic> _titleTopicDict;
@@ -29,10 +29,10 @@ namespace argonaut_subscription_server_proxy.Managers
 
         /// <summary>
         /// Prevents a default instance of the
-        /// <see cref="SubscriptionTopicManagerR4"/> class from being
+        /// <see cref="SubscriptionTopicManager"/> class from being
         /// created.
         /// </summary>
-        private SubscriptionTopicManagerR4()
+        private SubscriptionTopicManager()
         {
             // create our index objects
             _titleTopicDict = new Dictionary<string, SubscriptionTopic>();
@@ -187,24 +187,23 @@ namespace argonaut_subscription_server_proxy.Managers
         {
             Bundle bundle = new Bundle()
             {
-                Type = BundleTypeCodes.SEARCHSET,
-                Total = (uint)_titleTopicDict.Count,
+                Type = Bundle.BundleType.Searchset,
+                Total = _titleTopicDict.Count,
                 Meta = new Meta()
                 {
-                    LastUpdated = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFFK"),
+                    LastUpdated = DateTimeOffset.Now.ToUniversalTime(),
                 },
-                Entry = new List<BundleEntry>(),
             };
 
             foreach (SubscriptionTopic topic in _idTopicDict.Values)
             {
-                bundle.Entry.Add(new BundleEntry()
+                bundle.Entry.Add(new Bundle.EntryComponent()
                 {
-                    FullUrl = Program.UrlForR4ResourceId("SubscriptionTopic", topic.Id),
+                    FullUrl = UrlHelper.ForResourceId("SubscriptionTopic", topic.Id),
                     Resource = (Resource)topic,
-                    Search = new BundleEntrySearch
+                    Search = new Bundle.SearchComponent
                     {
-                        Mode = BundleEntrySearchModeCodes.MATCH,
+                        Mode = Bundle.SearchEntryMode.Match,
                     },
                 });
             }
@@ -217,7 +216,7 @@ namespace argonaut_subscription_server_proxy.Managers
         /// <param name="topic">The topic.</param>
         private void _AddOrUpdate(SubscriptionTopic topic)
         {
-            string localUrl = Program.UrlForR4ResourceId("SubscriptionTopic", topic.Id);
+            string localUrl = UrlHelper.ForResourceId("SubscriptionTopic", topic.Title);
 
             // check for local url already existing
             if (_localUrlTopicDict.ContainsKey(localUrl))
@@ -314,45 +313,45 @@ namespace argonaut_subscription_server_proxy.Managers
                 Id = "encounter-start",
                 Url = "http://argonautproject.org/encounters-ig/SubscriptionTopic/encounter-start",
                 Version = "1.1",
-                Status = SubscriptionTopicStatusCodes.DRAFT,
+                Status = PublicationStatus.Draft,
                 Experimental = true,
-                Description = "Beginning of a clinical encounter",
+                Description = new Markdown("Beginning of a clinical encounter"),
                 Date = "2021-08-03",
-                ResourceTrigger = new List<SubscriptionTopicResourceTrigger>()
+                ResourceTrigger = new List<SubscriptionTopic.ResourceTriggerComponent>()
                 {
-                    new SubscriptionTopicResourceTrigger()
+                    new SubscriptionTopic.ResourceTriggerComponent()
                     {
-                        Description = "Beginning of a clinical encounter",
+                        Description = new Markdown("Beginning of a clinical encounter"),
                         Resource = "Encounter",
-                        QueryCriteria = new SubscriptionTopicResourceTriggerQueryCriteria()
+                        QueryCriteria = new SubscriptionTopic.QueryCriteriaComponent()
                         {
                             Previous = "status:not=in-progress",
-                            ResultForCreate = SubscriptionTopicResourceTriggerQueryCriteriaResultForCreateCodes.TEST_PASSES,
+                            ResultForCreate = SubscriptionTopic.CriteriaNotExistsBehavior.TestPasses,
                             Current = "status:in-progress",
-                            ResultForDelete = SubscriptionTopicResourceTriggerQueryCriteriaResultForDeleteCodes.TEST_FAILS,
+                            ResultForDelete = SubscriptionTopic.CriteriaNotExistsBehavior.TestFails,
                             RequireBoth = true,
                         },
                         FhirPathCriteria = "%previous.status!='in-progress' and %current.status='in-progress'",
                     },
                 },
-                CanFilterBy = new List<SubscriptionTopicCanFilterBy>()
+                CanFilterBy = new List<SubscriptionTopic.CanFilterByComponent>()
                 {
-                    new SubscriptionTopicCanFilterBy()
+                    new SubscriptionTopic.CanFilterByComponent()
                     {
-                        Description = "Exact match to a patient resource (reference)",
+                        Description = new Markdown("Exact match to a patient resource (reference)"),
                         Resource = "Encounter",
                         FilterParameter = "patient",
                         // FilterParameter = "http://hl7.org/fhir/build/SearchParameter/Encounter-patient",
-                        Modifier = new List<string>()
+                        Modifier = new List<SubscriptionSearchModifier?>()
                         {
-                            fhirCsValueSets4B.SubscriptionSearchModifierCodes.LiteralEqual,
-                            fhirCsValueSets4B.SubscriptionSearchModifierCodes.LiteralIn,
+                            SubscriptionSearchModifier.Eq,
+                            SubscriptionSearchModifier.In
                         },
                     },
                 },
-                NotificationShape = new List<SubscriptionTopicNotificationShape>()
+                NotificationShape = new List<NotificationShapeComponent>()
                 {
-                    new SubscriptionTopicNotificationShape()
+                    new NotificationShapeComponent()
                     {
                         Resource = "Encounter",
                         Include = new List<string>()
@@ -375,7 +374,7 @@ namespace argonaut_subscription_server_proxy.Managers
         {
             if (_instance == null)
             {
-                _instance = new SubscriptionTopicManagerR4();
+                _instance = new SubscriptionTopicManager();
             }
         }
     }

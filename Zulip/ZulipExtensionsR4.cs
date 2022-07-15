@@ -3,19 +3,13 @@
 //     Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // </copyright>
 
-extern alias fhir4;
-extern alias fhir5;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hl7.Fhir.Model;
-using r4 = fhir4.Hl7.Fhir.Model;
-using r4s = fhir4.Hl7.Fhir.Serialization;
-using r5 = fhir5.Hl7.Fhir.Model;
-using r5s = fhir5.Hl7.Fhir.Serialization;
+using r4s = Hl7.Fhir.Serialization;
 
 namespace argonaut_subscription_server_proxy.Zulip
 {
@@ -46,26 +40,11 @@ namespace argonaut_subscription_server_proxy.Zulip
         /// <param name="resource">The resource.</param>
         /// <param name="value">   [out] The value.</param>
         /// <returns>True if it succeeds, false if it fails.</returns>
-        public static bool R4ZulipPmUserIdTryGet(this r4.Subscription resource, out string value)
+        public static bool R4ZulipPmUserIdTryGet(this Subscription resource, out string value)
         {
-            if ((resource == null) ||
-                (resource.Extension == null) ||
-                (!resource.Extension.Any()))
-            {
-                value = null;
-                return false;
-            }
-
-            foreach (Extension ext in resource.Extension)
-            {
-                if (ext.Url == ExtensionUrlPmUserId)
-                {
-                    value = ext.Value.ToString();
-                    return true;
-                }
-            }
-
-            value = null;
+            value = resource?.GetStringExtension(ExtensionUrlPmUserId);
+            if (!string.IsNullOrEmpty(value))
+                return true;
             return false;
         }
 
@@ -75,26 +54,11 @@ namespace argonaut_subscription_server_proxy.Zulip
         /// <param name="resource">The resource.</param>
         /// <param name="value">   [out] The value.</param>
         /// <returns>True if it succeeds, false if it fails.</returns>
-        public static bool R4ZulipStreamIdTryGet(this r4.Subscription resource, out string value)
+        public static bool R4ZulipStreamIdTryGet(this Subscription resource, out string value)
         {
-            if ((resource == null) ||
-                (resource.Extension == null) ||
-                (!resource.Extension.Any()))
-            {
-                value = null;
-                return false;
-            }
-
-            foreach (Extension ext in resource.Extension)
-            {
-                if (ext.Url == ExtensionUrlStreamId)
-                {
-                    value = ext.Value.ToString();
-                    return true;
-                }
-            }
-
-            value = null;
+            value = resource?.GetStringExtension(ExtensionUrlStreamId);
+            if (!string.IsNullOrEmpty(value))
+                return true;
             return false;
         }
 
@@ -102,26 +66,11 @@ namespace argonaut_subscription_server_proxy.Zulip
         /// <param name="resource">The resource.</param>
         /// <param name="value">   [out] The value.</param>
         /// <returns>True if it succeeds, false if it fails.</returns>
-        public static bool R4ZulipKeyTryGet(this r4.Subscription resource, out string value)
+        public static bool R4ZulipKeyTryGet(this Subscription resource, out string value)
         {
-            if ((resource == null) ||
-                (resource.Extension == null) ||
-                (!resource.Extension.Any()))
-            {
-                value = null;
-                return false;
-            }
-
-            foreach (Extension ext in resource.Extension)
-            {
-                if (ext.Url == ExtensionUrlKey)
-                {
-                    value = ext.Value.ToString();
-                    return true;
-                }
-            }
-
-            value = null;
+            value = resource?.GetStringExtension(ExtensionUrlKey);
+            if (!string.IsNullOrEmpty(value))
+                return true;
             return false;
         }
 
@@ -129,26 +78,11 @@ namespace argonaut_subscription_server_proxy.Zulip
         /// <param name="resource">The resource.</param>
         /// <param name="value">   [out] The value.</param>
         /// <returns>True if it succeeds, false if it fails.</returns>
-        public static bool R4ZulipEmailTryGet(this r4.Subscription resource, out string value)
+        public static bool R4ZulipEmailTryGet(this Subscription resource, out string value)
         {
-            if ((resource == null) ||
-                (resource.Extension == null) ||
-                (!resource.Extension.Any()))
-            {
-                value = null;
-                return false;
-            }
-
-            foreach (Extension ext in resource.Extension)
-            {
-                if (ext.Url == ExtensionUrlEmail)
-                {
-                    value = ext.Value.ToString();
-                    return true;
-                }
-            }
-
-            value = null;
+            value = resource?.GetStringExtension(ExtensionUrlEmail);
+            if (!string.IsNullOrEmpty(value))
+                return true;
             return false;
         }
 
@@ -156,26 +90,11 @@ namespace argonaut_subscription_server_proxy.Zulip
         /// <param name="resource">The resource.</param>
         /// <param name="value">   [out] The value.</param>
         /// <returns>True if it succeeds, false if it fails.</returns>
-        public static bool R4ZulipSiteTryGet(this r4.Subscription resource, out string value)
+        public static bool R4ZulipSiteTryGet(this Subscription resource, out string value)
         {
-            if ((resource == null) ||
-                (resource.Extension == null) ||
-                (!resource.Extension.Any()))
-            {
-                value = null;
-                return false;
-            }
-
-            foreach (Extension ext in resource.Extension)
-            {
-                if (ext.Url == ExtensionUrlSite)
-                {
-                    value = ext.Value.ToString();
-                    return true;
-                }
-            }
-
-            value = null;
+            value = resource?.GetStringExtension(ExtensionUrlSite);
+            if (!string.IsNullOrEmpty(value))
+                return true;
             return false;
         }
     }

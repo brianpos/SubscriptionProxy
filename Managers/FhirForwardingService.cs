@@ -26,14 +26,8 @@ namespace argonaut_subscription_server_proxy.Managers
         /// <summary>The FHIR R4 Client.</summary>
         private HttpClient _clientR4;
 
-        /// <summary>The FHIR R5 Client.</summary>
-        private HttpClient _clientR5;
-
         /// <summary>The FHIR R4 URI.</summary>
         private Uri _uriR4;
-
-        /// <summary>The FHIR R5 URI.</summary>
-        private Uri _uriR5;
 
         /// <summary>True if we have been disposed.</summary>
         private bool _disposedValue;
@@ -73,7 +67,6 @@ namespace argonaut_subscription_server_proxy.Managers
         public Task StartAsync(CancellationToken cancellationToken)
         {
             string urlR4 = Program.Configuration["Server_FHIR_Url_R4"];
-            string urlR5 = Program.Configuration["Server_FHIR_Url_R5"];
 
             if (string.IsNullOrEmpty(urlR4))
             {
@@ -85,18 +78,6 @@ namespace argonaut_subscription_server_proxy.Managers
                 _clientR4 = new HttpClient();
 
                 Console.WriteLine($"FhirForwardingService <<< created client for R4: {urlR4}");
-            }
-
-            if (string.IsNullOrEmpty(urlR5))
-            {
-                _clientR5 = null;
-            }
-            else
-            {
-                _uriR5 = new Uri(urlR5);
-                _clientR5 = new HttpClient();
-
-                Console.WriteLine($"FhirForwardingService <<< created client for R5: {urlR5}");
             }
 
             return Task.CompletedTask;
